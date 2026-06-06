@@ -1,6 +1,6 @@
 # PGHA-Net
 
-This repository provides the official PyTorch implementation of **PGHA-Net**:
+This repository provides the PyTorch implementation of **PGHA-Net**:
 
 **Periodicity-Guided Dynamic Graphs and Hybrid Aggregation Disentangled Network for Traffic Flow Prediction**
 
