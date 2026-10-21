@@ -306,7 +306,6 @@ def main():
     scaler = dataloader["scaler"]
 
     best_valid_loss = 9999999
-    best_test_loss = 999999
     best_epoch = 0
     epochs_since_best_mae = 0
 
@@ -471,40 +470,15 @@ def main():
             flush=True,
         )
 
+        # Select checkpoints by validation loss only.
         if mean_valid_loss < best_valid_loss:
             print("Validation improvement detected.")
-
-            if epoch < 80:
-                best_valid_loss = mean_valid_loss
-                torch.save(engine.model.state_dict(), path + "best_model.pth")
-                best_epoch = epoch
-                epochs_since_best_mae = 0
-                print("Updating! Valid Loss:", mean_valid_loss, end=", ")
-                print("epoch: ", epoch)
-
-            elif epoch >= 80:
-                mean_test_mae, _ = evaluate_pghanet_on_test_set(
-                    engine,
-                    dataloader,
-                    scaler,
-                    wavelet_basis,
-                    decomposition_level,
-                    device,
-                    collect_results=False,
-                )
-
-                if mean_test_mae < best_test_loss:
-                    best_test_loss = mean_test_mae
-                    best_valid_loss = mean_valid_loss
-                    torch.save(engine.model.state_dict(), path + "best_model.pth")
-                    epochs_since_best_mae = 0
-                    best_epoch = epoch
-                    print("Test low! Updating! Test Loss:", mean_test_mae, end=", ")
-                    print("Test low! Updating! Valid Loss:", mean_valid_loss, end=", ")
-                    print("epoch: ", epoch)
-                else:
-                    epochs_since_best_mae += 1
-                    print("No update")
+            best_valid_loss = mean_valid_loss
+            torch.save(engine.model.state_dict(), path + "best_model.pth")
+            best_epoch = epoch
+            epochs_since_best_mae = 0
+            print("Updating! Valid Loss:", mean_valid_loss, end=", ")
+            print("epoch: ", epoch)
         else:
             epochs_since_best_mae += 1
             print("No update")
